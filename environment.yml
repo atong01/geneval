@@ -5,8 +5,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - pytorch
-  #- pytorch=2.1
+  - pytorch=2.1
   - torchvision
   - pip:
     - open-clip-torch
