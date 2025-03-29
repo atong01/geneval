@@ -32,6 +32,8 @@ def parse_args():
     parser.add_argument("--outfile", type=str, default="results.jsonl")
     parser.add_argument("--model-config", type=str, default=None)
     parser.add_argument("--model-path", type=str, default="./")
+    parser.add_argument("--valset-only", action="store_true")
+    parser.add_argument("--max-index", type=int, default=1000)
     # Other arguments
     parser.add_argument("--options", nargs="*", type=str, default=[])
     args = parser.parse_args()
@@ -262,6 +264,17 @@ def evaluate_image(filepath, metadata):
 def main(args):
     full_results = []
     for subfolder in tqdm.tqdm(os.listdir(args.imagedir)):
+        try:
+            int(subfolder)
+        except ValueError:
+            print("Skipping", subfolder)
+            continue
+        if int(subfolder) not in VALSET and args.valset_only:
+            print("Skipping", subfolder)
+            continue
+        if int(subfolder) >= args.max_index:
+            print("Skipping", subfolder)
+            continue
         folderpath = os.path.join(args.imagedir, subfolder)
         if not os.path.isdir(folderpath) or not subfolder.isdigit():
             continue
@@ -289,5 +302,5 @@ if __name__ == "__main__":
     MAX_OBJECTS = int(args.options.get('max_objects', 16))
     NMS_THRESHOLD = float(args.options.get('max_overlap', 1.0))
     POSITION_THRESHOLD = float(args.options.get('position_threshold', 0.1))
-
+    VALSET = [111,112,113,211,212,213,311,312,313,411,412,413,511,512,513]
     main(args)
